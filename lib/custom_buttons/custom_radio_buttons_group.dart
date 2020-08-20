@@ -21,6 +21,7 @@ class CustomRadioButton extends StatefulWidget {
     this.textColor = Colors.black,
     this.selectedTextColor = Colors.white,
     this.initialSelection,
+    this.onBeforeSelect,
   })  : assert(buttonLables.length == buttonValues.length),
         assert(buttonLables.length > initialSelection),
         assert(buttonColor != null),
@@ -48,6 +49,7 @@ class CustomRadioButton extends StatefulWidget {
   final double elevation;
   final double buttonWidth;
   final int initialSelection;
+  final Function(dynamic, int) onBeforeSelect;
 
   _CustomRadioButtonState createState() => _CustomRadioButtonState();
 }
@@ -87,20 +89,35 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
             shape: widget.enableShape
                 ? widget.customShape == null
                     ? OutlineInputBorder(
-                        borderSide: BorderSide(color: currentSelectedLabel == widget.buttonLables[index] ? widget.buttonBorderColor : widget.unselectedButtonBorderColor /*.withOpacity(0.1)*/, width: 1),
+                        borderSide: BorderSide(
+                            color: currentSelectedLabel == widget.buttonLables[index]
+                                ? widget.buttonBorderColor
+                                : widget.unselectedButtonBorderColor /*.withOpacity(0.1)*/,
+                            width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       )
                     : widget.customShape
                 : OutlineInputBorder(
-                    borderSide: BorderSide(color: currentSelectedLabel == widget.buttonLables[index] ? widget.buttonBorderColor : widget.unselectedButtonBorderColor /*.withOpacity(0.1)*/, width: 1),
+                    borderSide: BorderSide(
+                        color: currentSelectedLabel == widget.buttonLables[index]
+                            ? widget.buttonBorderColor
+                            : widget.unselectedButtonBorderColor /*.withOpacity(0.1)*/,
+                        width: 1),
                     borderRadius: BorderRadius.zero,
                   ),
-            onPressed: () {
-              widget.radioButtonValue(widget.buttonValues[index], index);
-              setState(() {
-                currentSelected = index;
-                currentSelectedLabel = widget.buttonLables[index];
-              });
+            onPressed: () async {
+              bool willSelect = true;
+              if (widget.onBeforeSelect != null) {
+                willSelect = await widget.onBeforeSelect(widget.buttonValues[index], index);
+              }
+
+              if (willSelect) {
+                widget.radioButtonValue(widget.buttonValues[index], index);
+                setState(() {
+                  currentSelected = index;
+                  currentSelectedLabel = widget.buttonLables[index];
+                });
+              }
             },
             child: Text(
               widget.buttonLables[index],
@@ -138,20 +155,35 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
             shape: widget.enableShape
                 ? widget.customShape == null
                     ? OutlineInputBorder(
-                        borderSide: BorderSide(color: currentSelectedLabel == widget.buttonLables[index] ? widget.buttonBorderColor : widget.unselectedButtonBorderColor, width: 1),
+                        borderSide: BorderSide(
+                            color: currentSelectedLabel == widget.buttonLables[index]
+                                ? widget.buttonBorderColor
+                                : widget.unselectedButtonBorderColor,
+                            width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                       )
                     : widget.customShape
                 : OutlineInputBorder(
-                    borderSide: BorderSide(color: currentSelectedLabel == widget.buttonLables[index] ? widget.buttonBorderColor : widget.unselectedButtonBorderColor, width: 1),
+                    borderSide: BorderSide(
+                        color: currentSelectedLabel == widget.buttonLables[index]
+                            ? widget.buttonBorderColor
+                            : widget.unselectedButtonBorderColor,
+                        width: 1),
                     borderRadius: BorderRadius.zero,
                   ),
-            onPressed: () {
-              widget.radioButtonValue(widget.buttonValues[index], index);
-              setState(() {
-                currentSelected = index;
-                currentSelectedLabel = widget.buttonLables[index];
-              });
+            onPressed: () async {
+              bool willSelect = true;
+              if (widget.onBeforeSelect != null) {
+                willSelect = await widget.onBeforeSelect(widget.buttonValues[index], index);
+              }
+
+              if (willSelect) {
+                widget.radioButtonValue(widget.buttonValues[index], index);
+                setState(() {
+                  currentSelected = index;
+                  currentSelectedLabel = widget.buttonLables[index];
+                });
+              }
             },
             child: Text(
               widget.buttonLables[index],
